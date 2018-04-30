@@ -18,6 +18,7 @@ size_t buf_size(type v);
 size_t buf_capacity(type v);
 
 /* Destroy and free the buffer, effectively resetting it.
+ * Potentially assigns a new V pointer.
 */
 void buf_free(type v);
 
@@ -44,9 +45,10 @@ tyoe *buf_grow(type v, intptr_t n)
 type *buf_trunc(type v, intptr_t n);
 ```
 
-Note: `buf_push()`, `buf_grow()`, and `buf_trunc()` may change the
-buffer pointer, and any previously-taken pointers should be considered
-invalidated. This has important consequences that must be considered.
+Note: `buf_push()`, `buf_grow()`, `buf_trunc()`, and `buf_free()` may
+change the buffer pointer, and any previously-taken pointers should be
+considered invalidated. This has important consequences that must be
+considered.
 
 The `BUF_INIT_CAPACITY` determines the initial capacity for buffers
 recieving their first push.
