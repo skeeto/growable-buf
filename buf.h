@@ -80,21 +80,27 @@ static void *
 buf_grow1(void *v, size_t esize, intptr_t n)
 {
     struct buf *p;
-    // FIXME: check for integer overflow
     if (v) {
         p = buf_ptr(v);
+        if (n > 0 && p->capacity + n > (SIZE_MAX - sizeof(struct buf)) / esize)
+            goto fail; /* overflow */
         p = realloc(p, sizeof(struct buf) + esize * (p->capacity + n));
         if (!p)
-            BUF_ABORT;
+            goto fail;
         p->capacity += n;
         if (p->size > p->capacity)
             p->size = p->capacity;
     } else {
+        if ((size_t)n > (SIZE_MAX - sizeof(struct buf)) / esize)
+            goto fail; /* overflow */
         p = malloc(sizeof(struct buf) + esize * n);
         if (!p)
-            BUF_ABORT;
+            goto fail;
         p->capacity = n;
         p->size = 0;
     }
     return p->buffer;
+fail:
+    BUF_ABORT;
+    return 0;
 }

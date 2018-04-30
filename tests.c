@@ -1,4 +1,15 @@
 #include <stdio.h>
+#include <setjmp.h>
+
+static jmp_buf escape;
+
+static void
+test_abort(void)
+{
+    longjmp(escape, 1);
+}
+
+#define BUF_ABORT test_abort()
 #include "buf.h"
 
 #if _WIN32
@@ -20,12 +31,15 @@
         } \
     } while (0)
 
-static int count_pass = 0;
-static int count_fail = 0;
-
 int
 main(void)
 {
+    /* volatile due to setjmp() / longjmp() */
+    volatile int count_pass = 0;
+    volatile int count_fail = 0;
+
+    if (setjmp(escape))
+        abort();
 
     /* initialization, buf_free() */
     float *a = 0;
@@ -51,7 +65,7 @@ main(void)
     /* buf_grow(), buf_trunc() */
     buf_grow(ai, 1000);
     TEST("grow 1000", buf_capacity(ai) == 1000);
-    TEST("size 0", buf_size(ai) == 0);
+    TEST("size 0 (grow)", buf_size(ai) == 0);
     buf_trunc(ai, 100);
     TEST("trunc 100", buf_capacity(ai) == 100);
     buf_free(ai);
@@ -68,8 +82,49 @@ main(void)
     TEST("pop 2", buf_pop(a) == 1.3f);
     TEST("pop 1", buf_pop(a) == 1.2f);
     TEST("pop 0", buf_pop(a) == 1.1f);
-    TEST("size 0", buf_size(a) == 0);
+    TEST("size 0 (pop)", buf_size(a) == 0);
     buf_free(a);
+
+    /* Memory allocation failures */
+
+    volatile int aborted;
+
+    {
+        int *volatile p = 0;
+        aborted = 0;
+        if (!setjmp(escape)) {
+            buf_trunc(p, INTPTR_MAX / sizeof(*p) - sizeof(struct buf));
+        } else {
+            aborted = 1;
+        }
+        buf_free(p);
+        TEST("out of memory", aborted);
+    }
+
+    {
+        int *volatile p = 0;
+        aborted = 0;
+        if (!setjmp(escape)) {
+            buf_trunc(p, INTPTR_MAX);
+        } else {
+            aborted = 1;
+        }
+        buf_free(p);
+        TEST("overflow init", aborted);
+    }
+
+    {
+        int *volatile p = 0;
+        aborted = 0;
+        if (!setjmp(escape)) {
+            buf_trunc(p, 1); /* force realloc() use next */
+            buf_trunc(p, INTPTR_MAX);
+        } else {
+            aborted = 1;
+        }
+        buf_free(p);
+        TEST("overflow grow", aborted);
+    }
 
     printf("%d fail, %d pass\n", count_fail, count_pass);
     return count_fail != 0;

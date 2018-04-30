@@ -72,9 +72,13 @@ for (size_t i = 0; i < buf_size(values); i++)
 buf_free(values);
 ```
 
-This library is inspired by [stb `stretchy_buffer.h`][sb], but it's
-written in C99 so that it doesn't need to rely on undefined behavior. It
-uses a flexible array member and the `offsetof()` macro.
+## Purpose
+
+This library is inspired by [stb `stretchy_buffer.h`][sb]. The
+difference is that it's written in C99 so that it doesn't need to rely
+on undefined behavior. This does so by using a flexible array member and
+the `offsetof()` macro. It also checks for integer overflows before
+allocating any memory, making it safer.
 
 
 [sb]: https://github.com/nothings/stb/blob/master/stretchy_buffer.h
