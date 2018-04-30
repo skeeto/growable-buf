@@ -11,38 +11,38 @@ reflected by these hypothetical prototypes:
 ```c
 /* Returns the number of elements in the buffer (for push and pop).
 */
-size_t buf_size(type v);
+size_t buf_size(type *v);
 
 /* Returns the total capacity of the buffer.
 */
-size_t buf_capacity(type v);
+size_t buf_capacity(type *v);
 
 /* Destroy and free the buffer, effectively resetting it.
  * Potentially assigns a new V pointer.
 */
-void buf_free(type v);
+void buf_free(type *v);
 
 /* Append an element E to the end of the buffer, growing if necessary.
  * Potentially increases the capacity and assigns a new V pointer.
 */
-void buf_push(type v, e);
+void buf_push(type *v, type e);
 
 /* Remove an element E from the end of the buffer.
  * Neither the capacity nor the V pointer will change. Popping when the
  * size is zero has undefined results.
  */
-type buf_pop(type v, e);
+type buf_pop(type *v);
 
 /* Increase buffer capactity by N elements.
  * Potentially assigns a new V pointer while also returning it.
  */
-tyoe *buf_grow(type v, ptrdiff_t n)
+type *buf_grow(type *v, ptrdiff_t n)
 
 /* Set buffer capactity to exactly N elements.
  * Potentially assigns a new V pointer while also returning it. A
  * negative capacity has undefined results.
  */
-type *buf_trunc(type v, ptrdiff_t n);
+type *buf_trunc(type *v, ptrdiff_t n);
 ```
 
 Note: `buf_push()`, `buf_grow()`, `buf_trunc()`, and `buf_free()` may
