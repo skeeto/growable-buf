@@ -6,8 +6,8 @@
  *   buf_free(v)     : destroy and free the buffer
  *   buf_push(v, e)  : append an element E to the end
  *   buf_pop(v)      : remove and return an element E from the end
- *   buf_grow(v, n)  : increase buffer capactity by (intptr_t) N elements
- *   buf_trunc(v, n) : set buffer capactity to exactly (intptr_t) N elements
+ *   buf_grow(v, n)  : increase buffer capactity by (ptrdiff_t) N elements
+ *   buf_trunc(v, n) : set buffer capactity to exactly (ptrdiff_t) N elements
  *
  * Note: buf_push(), buf_grow(), and buf_trunc() may change the buffer
  * pointer, and any previously-taken pointers should be considered
@@ -23,7 +23,6 @@
  *     buf_free(values);
  */
 #include <stddef.h>
-#include <stdint.h>
 #include <stdlib.h>
 
 #ifndef BUF_INIT_CAPACITY
@@ -77,12 +76,13 @@ struct buf {
     ((v) = buf_grow1((v), sizeof(*(v)), n - buf_capacity(v)))
 
 static void *
-buf_grow1(void *v, size_t esize, intptr_t n)
+buf_grow1(void *v, size_t esize, ptrdiff_t n)
 {
     struct buf *p;
+    size_t max = (size_t)-1 - sizeof(struct buf);
     if (v) {
         p = buf_ptr(v);
-        if (n > 0 && p->capacity + n > (SIZE_MAX - sizeof(struct buf)) / esize)
+        if (n > 0 && p->capacity + n > max / esize)
             goto fail; /* overflow */
         p = realloc(p, sizeof(struct buf) + esize * (p->capacity + n));
         if (!p)
@@ -91,7 +91,7 @@ buf_grow1(void *v, size_t esize, intptr_t n)
         if (p->size > p->capacity)
             p->size = p->capacity;
     } else {
-        if ((size_t)n > (SIZE_MAX - sizeof(struct buf)) / esize)
+        if ((size_t)n > max / esize)
             goto fail; /* overflow */
         p = malloc(sizeof(struct buf) + esize * n);
         if (!p)

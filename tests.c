@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdint.h>
 #include <setjmp.h>
 
 static jmp_buf escape;
@@ -93,7 +94,7 @@ main(void)
         int *volatile p = 0;
         aborted = 0;
         if (!setjmp(escape)) {
-            buf_trunc(p, INTPTR_MAX / sizeof(*p) - sizeof(struct buf));
+            buf_trunc(p, PTRDIFF_MAX / sizeof(*p) - sizeof(struct buf));
         } else {
             aborted = 1;
         }
@@ -105,7 +106,7 @@ main(void)
         int *volatile p = 0;
         aborted = 0;
         if (!setjmp(escape)) {
-            buf_trunc(p, INTPTR_MAX);
+            buf_trunc(p, PTRDIFF_MAX);
         } else {
             aborted = 1;
         }
@@ -118,7 +119,7 @@ main(void)
         aborted = 0;
         if (!setjmp(escape)) {
             buf_trunc(p, 1); /* force realloc() use next */
-            buf_trunc(p, INTPTR_MAX);
+            buf_trunc(p, PTRDIFF_MAX);
         } else {
             aborted = 1;
         }

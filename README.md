@@ -36,13 +36,13 @@ type buf_pop(type v, e);
 /* Increase buffer capactity by N elements.
  * Potentially assigns a new V pointer while also returning it.
  */
-tyoe *buf_grow(type v, intptr_t n)
+tyoe *buf_grow(type v, ptrdiff_t n)
 
 /* Set buffer capactity to exactly N elements.
  * Potentially assigns a new V pointer while also returning it. A
  * negative capacity has undefined results.
  */
-type *buf_trunc(type v, intptr_t n);
+type *buf_trunc(type v, ptrdiff_t n);
 ```
 
 Note: `buf_push()`, `buf_grow()`, `buf_trunc()`, and `buf_free()` may
