@@ -161,7 +161,9 @@ main(int argc, char **argv)
         int *volatile p = 0;
         aborted = 0;
         if (!setjmp(escape)) {
-            buf_trunc(p, PTRDIFF_MAX / sizeof(*p) - sizeof(struct buf));
+            size_t max = (PTRDIFF_MAX - sizeof(struct buf)) / sizeof(*p) + 1;
+            buf_grow(p, max);
+            buf_grow(p, max);
         } else {
             aborted = 1;
         }
