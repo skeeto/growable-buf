@@ -8,5 +8,8 @@ test: check
 check: tests
 	./tests
 
+bench: tests
+	./tests 558d2750ae0e0887
+
 clean:
 	rm -f tests
