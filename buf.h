@@ -58,10 +58,11 @@ struct buf {
 
 #define buf_push(v, e) \
     do { \
-        if (!buf_capacity((v))) { \
-            (v) = buf_grow1(v, sizeof(*(v)), BUF_INIT_CAPACITY); \
-        } else if (buf_capacity((v)) == buf_size((v))) { \
-            (v) = buf_grow1((v), sizeof(*(v)), buf_capacity((v))); \
+        if (buf_capacity((v)) == buf_size((v))) { \
+            (v) = buf_grow1(v, sizeof(*(v)), \
+                            !buf_capacity((v)) ? \
+                              BUF_INIT_CAPACITY : \
+                              buf_capacity((v))); \
         } \
         (v)[buf_ptr((v))->size++] = (e); \
     } while (0)
