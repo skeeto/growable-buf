@@ -36,7 +36,7 @@ type buf_pop(type *v);
 /* Increase buffer capactity by N elements.
  * Potentially assigns a new V pointer while also returning it.
  */
-type *buf_grow(type *v, ptrdiff_t n)
+type *buf_grow(type *v, ptrdiff_t n);
 
 /* Set buffer capactity to exactly N elements.
  * Potentially assigns a new V pointer while also returning it. A
