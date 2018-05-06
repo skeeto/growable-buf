@@ -1,7 +1,7 @@
 # Growable Memory Buffers for C99
 
 This C99 header library provides a simple, portable interface to
-growable buffers of homogenous values of any type, similar to a
+growable buffers of homogeneous values of any type, similar to a
 std::vector in C++. The user need not use any particular struct, and the
 buffer need only initialize to NULL.
 
@@ -51,7 +51,7 @@ considered invalidated. This has important consequences that must be
 considered.
 
 The `BUF_INIT_CAPACITY` determines the initial capacity for buffers
-recieving their first push.
+receiving their first push.
 
 The `BUF_ABORT` macro is evaluated when the system runs out of memory.
 It defaults to `abort()`, but you may override it to run your own abort
