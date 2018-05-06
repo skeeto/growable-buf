@@ -43,6 +43,12 @@ type *buf_grow(type *v, ptrdiff_t n)
  * negative capacity has undefined results.
  */
 type *buf_trunc(type *v, ptrdiff_t n);
+
+/* Set buffer size to zero.
+ * Only affects push and pop. The capacity and buffer contents are
+ * unchanged.
+ */
+void buf_clear(type *v);
 ```
 
 Note: `buf_push()`, `buf_grow()`, `buf_trunc()`, and `buf_free()` may

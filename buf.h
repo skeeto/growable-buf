@@ -8,10 +8,11 @@
  *   buf_pop(v)      : remove and return an element E from the end
  *   buf_grow(v, n)  : increase buffer capactity by (ptrdiff_t) N elements
  *   buf_trunc(v, n) : set buffer capactity to exactly (ptrdiff_t) N elements
+ *   buf_clear(v, n) : set buffer size to 0 (for push/pop)
  *
- * Note: buf_push(), buf_grow(), and buf_trunc() may change the buffer
- * pointer, and any previously-taken pointers should be considered
- * invalidated.
+ * Note: buf_push(), buf_grow(), buf_trunc(), and buf_free() may change
+ * the buffer pointer, and any previously-taken pointers should be
+ * considered invalidated.
  *
  * Example usage:
  *
@@ -75,6 +76,10 @@ struct buf {
 
 #define buf_trunc(v, n) \
     ((v) = buf_grow1((v), sizeof(*(v)), n - buf_capacity(v)))
+
+#define buf_clear(v) \
+    ((v) ? (buf_ptr((v))->size = 0) : 0)
+
 
 static void *
 buf_grow1(void *v, size_t esize, ptrdiff_t n)
