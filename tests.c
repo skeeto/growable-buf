@@ -98,7 +98,7 @@ main(int argc, char **argv)
         for (int i = 0; i < 300; i++)
             r += bench(&rng);
         double t = (uepoch() - start) / 1e6;
-        printf("%.6gs : acutal %lu, expect 428859598\n", t, r);
+        printf("%.6gs : actual %lu, expect 428859598\n", t, r);
         return 0;
     }
 
